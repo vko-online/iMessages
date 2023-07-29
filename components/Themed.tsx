@@ -3,42 +3,43 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { Text as DefaultText, useColorScheme, View as DefaultView } from 'react-native';
+import { useColorScheme, View as DefaultView } from 'react-native'
+import { Text as DefaultText, TextProps as DefaultTextProps } from '@rneui/themed'
 
-import Colors from '@/constants/Colors';
+import Colors from '@/constants/Colors'
 
-type ThemeProps = {
-  lightColor?: string;
-  darkColor?: string;
-};
+interface ThemeProps {
+  lightColor?: string
+  darkColor?: string
+}
 
-export type TextProps = ThemeProps & DefaultText['props'];
-export type ViewProps = ThemeProps & DefaultView['props'];
+export type TextProps = ThemeProps & DefaultTextProps
+export type ViewProps = ThemeProps & DefaultView['props']
 
-export function useThemeColor(
-  props: { light?: string; dark?: string },
+export function useThemeColor (
+  props: { light?: string, dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
-) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
+): string {
+  const theme = useColorScheme() ?? 'light'
+  const colorFromProps = props[theme]
 
-  if (colorFromProps) {
-    return colorFromProps;
+  if (colorFromProps != null) {
+    return colorFromProps
   } else {
-    return Colors[theme][colorName];
+    return Colors[theme][colorName]
   }
 }
 
-export function Text(props: TextProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+export function Text (props: TextProps): JSX.Element {
+  const { style, lightColor, darkColor, ...otherProps } = props
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text')
 
-  return <DefaultText style={[{ color }, style]} {...otherProps} />;
+  return <DefaultText style={[{ color }, style]} {...otherProps} />
 }
 
-export function View(props: ViewProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+export function View (props: ViewProps): JSX.Element {
+  const { style, lightColor, darkColor, ...otherProps } = props
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background')
 
-  return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />
 }
