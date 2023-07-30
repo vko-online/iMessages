@@ -1,6 +1,6 @@
 import { StyleSheet, TouchableOpacity } from 'react-native'
 
-import { View } from '@/components/Themed'
+import { View, useThemeColor } from '@/components/Themed'
 import { MessageInput } from '@/types'
 import { Input } from '@rneui/themed'
 import { Ionicons } from '@expo/vector-icons'
@@ -10,6 +10,7 @@ interface ComposerProps {
   onSend: (msg: MessageInput) => void
 }
 export default function Composer ({ onSend }: ComposerProps): JSX.Element {
+  const color = useThemeColor({ light: '#000', dark: '#fff' }, 'text')
   return (
     <View style={s.composer}>
       <View style={s.actions}>
@@ -23,6 +24,7 @@ export default function Composer ({ onSend }: ComposerProps): JSX.Element {
       <Input
         containerStyle={s.inputContainer}
         inputContainerStyle={s.input}
+        inputStyle={{ color }}
         errorStyle={s.error}
         underlineColorAndroid='transparent'
         rightIcon={<Ionicons color={systemIcon} name='arrow-up-circle' size={30} />}
