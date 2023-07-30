@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet } from 'react-native'
 
 import { Text, View, useThemeColor } from '@/components/Themed'
 import { ListItem, Avatar, Divider } from '@rneui/themed'
@@ -7,6 +7,8 @@ import { useCallback, useState } from 'react'
 import { FlatList } from 'react-native-gesture-handler'
 import { User } from '@/services/realm/schema'
 import TagInput from '@/components/TagInput'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Composer from '@/components/Composer'
 
 export default function StartConversationModalScreen (): JSX.Element {
   const [searchText, setSearchText] = useState<string>('')
@@ -33,10 +35,12 @@ export default function StartConversationModalScreen (): JSX.Element {
     }
   }, [])
   return (
-    <View style={s.container}>
-      <View style={s.row}>
-        <Text>To:</Text>
-        {/* <Input
+    <KeyboardAvoidingView keyboardVerticalOffset={100} behavior='padding' style={[s.keyboardView, { backgroundColor }]}>
+      <View style={s.container}>
+        <View>
+          <View style={s.row}>
+            <Text>To:</Text>
+            {/* <Input
           style={{ color, margin: 0, padding: 0 }}
           underlineColorAndroid='transparent'
           errorStyle={s.error}
@@ -45,59 +49,71 @@ export default function StartConversationModalScreen (): JSX.Element {
           inputContainerStyle={s.input}
           rightIcon={{ type: 'ionicons', name: 'add-circle-outline', color: systemText }}
         /> */}
-        <TagInput
-          value={tags}
-          onChange={handleChangeTags}
-          labelExtractor={(tag: string) => tag}
-          text={searchText}
-          onChangeText={handleChangeText}
-          tagColor='#999'
-          tagTextColor='#eee'
-          inputProps={{
-            keyboardType: 'default',
-            autoFocus: true,
-            style: {
-              marginLeft: 5,
-              fontSize: 14,
-              marginVertical: 10
-            }
-          }}
-          scrollViewProps={{
-            horizontal: true,
-            showsHorizontalScrollIndicator: false
-          }}
-          maxHeight={75}
-        />
-      </View>
-      <FlatList
-        data={searchedUsers.filter(v => !tags.includes(v.name))}
-        renderItem={({ item }) => (
-          <ListItem
-            containerStyle={{ backgroundColor }} onPress={() => {
-              handleChangeTags([...tags, item.name])
-            }}
-          >
-            <Avatar
-              rounded
-              size={24}
-              source={{ uri: 'https://randomuser.me/api/portraits/men/33.jpg' }}
+            <TagInput
+              value={tags}
+              onChange={handleChangeTags}
+              labelExtractor={(tag: string) => tag}
+              text={searchText}
+              onChangeText={handleChangeText}
+              tagColor='#999'
+              tagTextColor='#eee'
+              inputDefaultWidth={200}
+              inputProps={{
+                keyboardType: 'default',
+                autoFocus: true,
+                style: {
+                  fontSize: 14,
+                  padding: 10
+                }
+              }}
+              scrollViewProps={{
+                horizontal: true,
+                showsHorizontalScrollIndicator: false
+              }}
+              maxHeight={75}
             />
-            <ListItem.Content>
-              <ListItem.Title style={{ color }}>{item.name}</ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-        )}
-      />
-      <Divider />
-    </View>
+          </View>
+        </View>
+        <FlatList
+          style={{ flexGrow: 0 }}
+          keyboardShouldPersistTaps='always'
+          data={searchedUsers.filter(v => !tags.includes(v.name))}
+          renderItem={({ item }) => (
+            <ListItem
+              containerStyle={{ backgroundColor }} onPress={() => {
+                handleChangeTags([...tags, item.name])
+              }}
+            >
+              <Avatar
+                rounded
+                size={24}
+                source={{ uri: 'https://randomuser.me/api/portraits/men/33.jpg' }}
+              />
+              <ListItem.Content>
+                <ListItem.Title style={{ color }}>{item.name}</ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          )}
+        />
+        <Divider />
+        <View style={{ flex: 1 }} />
+        <SafeAreaView edges={['bottom']}>
+          <Composer onSend={() => {}} />
+        </SafeAreaView>
+      </View>
+    </KeyboardAvoidingView>
   )
 }
 
 const s = StyleSheet.create({
+  keyboardView: {
+    flex: 1
+  },
   container: {
-    // flex: 1
+    flex: 1
   },
   row: {
+    flexGrow: 0,
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 15
