@@ -1,29 +1,42 @@
-import { FlatList, StyleSheet } from 'react-native'
+import { FlatList, KeyboardAvoidingView, StyleSheet } from 'react-native'
 
-import { View } from '@/components/Themed'
+import { useThemeColor } from '@/components/Themed'
 import { useLocalSearchParams } from 'expo-router'
 import { findConversationById } from '@/data/messages'
 import MessageItem from '@/components/MessageItem'
+import Composer from '@/components/Composer'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen (): JSX.Element {
   const { conversationId } = useLocalSearchParams<{ conversationId: string }>()
   const conversation = findConversationById(conversationId)
+  const backgroundColor = useThemeColor({ light: '#fff', dark: '#000' }, 'background')
+
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView keyboardVerticalOffset={65} behavior='padding' style={[s.keyboardView, { backgroundColor }]}>
       <FlatList
         data={conversation?.messages}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
         renderItem={({ item }) => <MessageItem data={item} />}
         keyExtractor={(item) => item.id}
       />
-    </View>
+      <SafeAreaView edges={['bottom']}>
+        <Composer onSend={() => {}} />
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   )
 }
 
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
+  keyboardView: {
+    flex: 1
+  },
   container: {
     flex: 1,
+    backgroundColor: '#fff'
     // alignItems: 'center',
-    justifyContent: 'center'
+    // justifyContent: 'center'
   },
   title: {
     fontSize: 20,
