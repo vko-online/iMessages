@@ -1,10 +1,12 @@
-import { RealmProvider } from '@/services/realm'
+import { REALM_APP_ID, RealmProvider } from '@/services/realm'
+import { AppProvider, UserProvider } from '@realm/react'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { useFonts } from 'expo-font'
 import { Slot, SplashScreen } from 'expo-router'
 import { useEffect } from 'react'
-import { AuthProvider } from '@/context/auth'
 import 'react-native-get-random-values'
+import ProtectedNavigator from '@/components/ProtectedNavigator'
+import SignIn from '@/components/SignIn'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -36,10 +38,14 @@ export default function RootLayout (): JSX.Element | null {
   }
 
   return (
-    <RealmProvider>
-      <AuthProvider>
-        <Slot />
-      </AuthProvider>
-    </RealmProvider>
+    <AppProvider id={REALM_APP_ID}>
+      <UserProvider fallback={SignIn}>
+        <RealmProvider>
+          {/* <ProtectedNavigator> */}
+          <Slot />
+          {/* </ProtectedNavigator> */}
+        </RealmProvider>
+      </UserProvider>
+    </AppProvider>
   )
 }

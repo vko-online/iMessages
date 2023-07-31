@@ -1,7 +1,7 @@
 import { systemText } from '@/constants/Colors'
-import { useAuth } from '@/context/auth'
 import { Ionicons } from '@expo/vector-icons'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { useApp } from '@realm/react'
 import { Link, Stack, useRouter } from 'expo-router'
 import { Alert, Button, useColorScheme } from 'react-native'
 import { ContextMenuButton } from 'react-native-ios-context-menu'
@@ -15,7 +15,7 @@ export const unstable_settings = {
 export default function AppLayout (): JSX.Element {
   const colorScheme = useColorScheme()
   const router = useRouter()
-  const { signOut } = useAuth()
+  const app = useApp()
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack initialRouteName='index'>
@@ -85,7 +85,7 @@ export default function AppLayout (): JSX.Element {
                 }}
                 onPressMenuItem={({ nativeEvent }) => {
                   if (nativeEvent.actionKey === 'action-logout') {
-                    void signOut()
+                    void app.currentUser?.logOut()
                     return
                   }
                   Alert.alert(
