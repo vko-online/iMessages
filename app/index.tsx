@@ -4,13 +4,14 @@ import { Divider } from '@rneui/themed'
 import { conversations } from '@/data/messages'
 import ConversationItem from '@/components/ConversationItem'
 import { Conversation } from '@/services/realm/schema'
-import { realmApp, useQuery } from '@/services/realm'
+import { useQuery } from '@/services/realm'
+import { useUser } from '@realm/react'
 
 // const { height: windowHeight } = Dimensions.get('window')
 
 export default function Screen (): JSX.Element {
   const _conversations = useQuery(Conversation)
-  const currentUser = realmApp.currentUser
+  const currentUser = useUser()
 
   console.log('_conversations', _conversations)
   console.log('currentUser', currentUser)
