@@ -93,7 +93,8 @@ export default function StartConversationModalScreen (): JSX.Element {
           data={searchedUsers.filter(v => !tags.includes(v.name))}
           renderItem={({ item }) => (
             <ListItem
-              containerStyle={{ backgroundColor }} onPress={() => {
+              containerStyle={{ backgroundColor }}
+              onPress={() => {
                 handleChangeTags([...tags, item.name])
               }}
             >
