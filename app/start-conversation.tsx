@@ -9,6 +9,8 @@ import { User } from '@/services/realm/schema'
 import TagInput from '@/components/TagInput'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Composer from '@/components/Composer'
+import { useStartConversation } from '@/services/realm/hooks'
+import { MessageType } from '@/types'
 
 export default function StartConversationModalScreen (): JSX.Element {
   const [searchText, setSearchText] = useState<string>('')
@@ -17,11 +19,20 @@ export default function StartConversationModalScreen (): JSX.Element {
   const searchedUsers = searchText.length > 0 ? users.filtered('name CONTAINS[c] $0', searchText) : []
   const backgroundColor = useThemeColor({ light: '#fff', dark: '#000' }, 'background')
   const color = useThemeColor({ light: '#000', dark: '#fff' }, 'text')
+  const [onSendMessage] = useStartConversation([...tags])
 
   const handleChangeTags = (tgs: readonly string[]): void => {
     setTags(tgs)
     setSearchText('')
   }
+
+  const handleSendMessage = useCallback((text: string) => {
+    onSendMessage({
+      content: text,
+      files: [],
+      type: MessageType.TEXT
+    })
+  }, [onSendMessage])
 
   const handleChangeText = useCallback((text: string) => {
     setSearchText(text)
@@ -98,7 +109,7 @@ export default function StartConversationModalScreen (): JSX.Element {
         <Divider />
         <View style={{ flex: 1 }} />
         <SafeAreaView edges={['bottom']}>
-          <Composer onSend={() => {}} />
+          <Composer onSend={handleSendMessage} />
         </SafeAreaView>
       </View>
     </KeyboardAvoidingView>

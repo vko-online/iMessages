@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native'
 
 import { Text, View, useThemeColor } from '@/components/Themed'
-import { Conversation } from '@/types'
+import { Conversation } from '@/services/realm/schema'
 import { Avatar, ListItem } from '@rneui/themed'
 import { Link } from 'expo-router'
 
@@ -15,7 +15,7 @@ export default function ConversationItem ({ data }: ConversationItemProps): JSX.
   const color = useThemeColor({ light: '#000', dark: '#fff' }, 'text')
 
   return (
-    <Link href={`/(app)/conversation/${data.id}`}>
+    <Link href={`/(app)/conversation/${data._id.toHexString()}`}>
       <ListItem containerStyle={{ backgroundColor }} style={[s.item]}>
         <Avatar
           rounded

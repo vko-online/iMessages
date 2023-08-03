@@ -1,16 +1,22 @@
 import { StyleSheet, TouchableOpacity } from 'react-native'
 
 import { View, useThemeColor } from '@/components/Themed'
-import { MessageInput } from '@/types'
 import { Input } from '@rneui/themed'
 import { Ionicons } from '@expo/vector-icons'
 import { systemIcon } from '@/constants/Colors'
+import { useCallback, useState } from 'react'
 
 interface ComposerProps {
-  onSend: (msg: MessageInput) => void
+  onSend: (msg: string) => void
 }
 export default function Composer ({ onSend }: ComposerProps): JSX.Element {
+  const [value, setValue] = useState<string>('')
   const color = useThemeColor({ light: '#000', dark: '#fff' }, 'text')
+
+  const handleSubmit = useCallback(() => {
+    onSend(value)
+    setValue('')
+  }, [onSend, value, setValue])
   return (
     <View style={s.composer}>
       <View style={s.actions}>
@@ -25,9 +31,12 @@ export default function Composer ({ onSend }: ComposerProps): JSX.Element {
         containerStyle={s.inputContainer}
         inputContainerStyle={s.input}
         inputStyle={{ color }}
+        value={value}
+        onChangeText={setValue}
         errorStyle={s.error}
         underlineColorAndroid='transparent'
-        rightIcon={<Ionicons color={systemIcon} name='arrow-up-circle' size={30} />}
+        onSubmitEditing={handleSubmit}
+        rightIcon={<Ionicons onPress={handleSubmit} color={systemIcon} name='arrow-up-circle' size={30} />}
       />
     </View>
   )
