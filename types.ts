@@ -26,5 +26,4 @@ export interface MessageInput {
   type: MessageType
   content: string
   files: Blob[]
-  authorId: string
 }

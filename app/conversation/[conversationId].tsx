@@ -2,27 +2,42 @@ import { FlatList, KeyboardAvoidingView, StyleSheet } from 'react-native'
 
 import { useThemeColor } from '@/components/Themed'
 import { useLocalSearchParams } from 'expo-router'
-import { findConversationById } from '@/data/messages'
 import MessageItem from '@/components/MessageItem'
 import Composer from '@/components/Composer'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useSendMessage } from '@/services/realm/hooks'
+import { MessageType } from '@/types'
+import { useCallback } from 'react'
+import { Message } from '@/services/realm/schema'
+import { useQuery } from '@/services/realm'
 
 export default function Screen (): JSX.Element {
   const { conversationId } = useLocalSearchParams<{ conversationId: string }>()
-  const conversation = findConversationById(conversationId)
   const backgroundColor = useThemeColor({ light: '#fff', dark: '#000' }, 'background')
+  const [onSendMessage] = useSendMessage(conversationId)
+  const rawMessages = useQuery(Message)
+
+  const messages = rawMessages.filtered('@links.conversation._id == $0', conversationId)
+
+  const handleSendMessage = useCallback((text: string) => {
+    onSendMessage({
+      content: text,
+      files: [],
+      type: MessageType.TEXT
+    })
+  }, [onSendMessage])
 
   return (
     <KeyboardAvoidingView keyboardVerticalOffset={65} behavior='padding' style={[s.keyboardView, { backgroundColor }]}>
       <FlatList
-        data={conversation?.messages}
+        data={messages}
         style={{ flex: 1 }}
         contentContainerStyle={{ flexGrow: 1 }}
         renderItem={({ item }) => <MessageItem data={item} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id.toHexString()}
       />
       <SafeAreaView edges={['bottom']}>
-        <Composer onSend={() => {}} />
+        <Composer onSend={handleSendMessage} />
       </SafeAreaView>
     </KeyboardAvoidingView>
   )
