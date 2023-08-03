@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, StyleSheet } from 'react-native'
 import { Text, View, useThemeColor } from '@/components/Themed'
 import { ListItem, Avatar, Divider } from '@rneui/themed'
 import { useQuery } from '@/services/realm'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { FlatList } from 'react-native-gesture-handler'
 import { User } from '@/services/realm/schema'
 import TagInput from '@/components/TagInput'
@@ -25,6 +25,8 @@ export default function StartConversationModalScreen (): JSX.Element {
     setTags(tgs)
     setSearchText('')
   }
+
+  const handleLabelExtract = useMemo(() => (tag: string) => users.find(v => v._id.equals(tag))?.name, [users])
 
   const handleSendMessage = useCallback((text: string) => {
     onSendMessage({
@@ -63,7 +65,7 @@ export default function StartConversationModalScreen (): JSX.Element {
             <TagInput
               value={tags}
               onChange={handleChangeTags}
-              labelExtractor={(tag: string) => tag}
+              labelExtractor={handleLabelExtract}
               text={searchText}
               onChangeText={handleChangeText}
               tagColor='#999'
