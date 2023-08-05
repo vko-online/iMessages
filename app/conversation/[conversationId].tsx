@@ -17,7 +17,7 @@ export default function Screen (): JSX.Element {
   const [onSendMessage] = useSendMessage(conversationId)
   const rawMessages = useQuery(Message)
 
-  const messages = rawMessages.filtered('@links.conversation._id == $0', conversationId)
+  const messages = rawMessages
 
   const handleSendMessage = useCallback((text: string) => {
     onSendMessage({

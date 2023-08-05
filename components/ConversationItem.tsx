@@ -15,7 +15,7 @@ export default function ConversationItem ({ data }: ConversationItemProps): JSX.
   const color = useThemeColor({ light: '#000', dark: '#fff' }, 'text')
 
   return (
-    <Link href={`/(app)/conversation/${data._id.toHexString()}`}>
+    <Link href={`/conversation/${data._id.toHexString()}`}>
       <ListItem containerStyle={{ backgroundColor }} style={[s.item]}>
         <Avatar
           rounded

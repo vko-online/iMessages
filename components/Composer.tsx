@@ -36,7 +36,7 @@ export default function Composer ({ onSend }: ComposerProps): JSX.Element {
         errorStyle={s.error}
         underlineColorAndroid='transparent'
         onSubmitEditing={handleSubmit}
-        rightIcon={<Ionicons onPress={handleSubmit} color={systemIcon} name='arrow-up-circle' size={30} />}
+        rightIcon={<Ionicons disabled={value?.length === 0} onPress={handleSubmit} color={systemIcon} name='arrow-up-circle' size={30} />}
       />
     </View>
   )

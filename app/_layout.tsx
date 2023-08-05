@@ -1,10 +1,10 @@
-import { REALM_APP_ID, RealmProvider } from '@/services/realm'
-import { AppProvider, UserProvider, useApp } from '@realm/react'
+import 'react-native-get-random-values'
+import { REALM_APP_ID, RealmProvider, useRealm } from '@/services/realm'
+import { Realm, AppProvider, UserProvider, useApp } from '@realm/react'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { useFonts } from 'expo-font'
 import { Link, SplashScreen, Stack, useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import 'react-native-get-random-values'
 import SignIn from '@/components/SignIn'
 import Loading from '@/components/Loading'
 import { systemText } from '@/constants/Colors'
@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native'
 import { useColorScheme, Alert, Button } from 'react-native'
 import { ContextMenuButton } from 'react-native-ios-context-menu'
+import { User } from '@/services/realm/schema'
+import { useCreateUser } from '@/services/realm/hooks'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -54,6 +56,13 @@ export default function RootLayout (): JSX.Element | null {
         <RealmProvider
           sync={{
             flexible: true,
+            initialSubscriptions: {
+              update (subs, realm) {
+                subs.add(realm.objects('User'))
+                subs.add(realm.objects('Conversation'))
+                subs.add(realm.objects('Message'))
+              }
+            },
             onError: (_, error) => {
               console.error(error)
             }
@@ -71,6 +80,35 @@ function AppLayout (): JSX.Element {
   const colorScheme = useColorScheme()
   const router = useRouter()
   const app = useApp()
+  const realm = useRealm()
+  useCreateUser()
+  useEffect(() => {
+    let subscription: Realm.App.Sync.Subscription
+    async function addSubscription (): Promise<void> {
+      await realm.subscriptions.update((mutableSubs, realm) => {
+        // Create subscription for filtered results.
+        subscription = mutableSubs.add(realm.objects<User>('User'))
+      })
+    }
+    void addSubscription()
+    const existingUsers = realm.objects<User>('User')
+    if (existingUsers.length === 0) {
+      // add data to realm
+      realm.write(() => {
+        realm.create('User', { _id: new Realm.BSON.ObjectId(), name: 'Alice', messages: [], conversations: [] })
+        realm.create('User', { _id: new Realm.BSON.ObjectId(), name: 'Jasper', messages: [], conversations: [] })
+        realm.create('User', { _id: new Realm.BSON.ObjectId(), name: 'Maggie', messages: [], conversations: [] })
+        realm.create('User', { _id: new Realm.BSON.ObjectId(), name: 'Sophie', messages: [], conversations: [] })
+      })
+    }
+    return () => {
+      if (subscription != null) {
+        void realm.subscriptions.update((mutableSubs) => {
+          mutableSubs.removeSubscription(subscription)
+        })
+      }
+    }
+  }, [realm])
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack initialRouteName='index'>

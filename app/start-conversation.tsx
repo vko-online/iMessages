@@ -95,7 +95,7 @@ export default function StartConversationModalScreen (): JSX.Element {
             <ListItem
               containerStyle={{ backgroundColor }}
               onPress={() => {
-                handleChangeTags([...tags, item.name])
+                handleChangeTags([...tags, item._id.toHexString()])
               }}
             >
               <Avatar
